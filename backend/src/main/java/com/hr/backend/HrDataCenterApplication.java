@@ -39,6 +39,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// 临时测试类（随便放在项目里，执行一次即可）
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 /**
  * Spring Boot应用程序启动类
  * <p>
@@ -70,10 +73,23 @@ public class HrDataCenterApplication {
      * @param args 命令行参数，可用于覆盖配置文件中的配置项
      */
     public static void main(String[] args) {
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String correctPwd = encoder.encode("123456"); // 生成123456的合法加密串
+        System.out.println("正确的BCrypt加密串：" + correctPwd);
+
         SpringApplication.run(HrDataCenterApplication.class, args);
         System.out.println("========================================");
         System.out.println("人力资源数据中心系统启动成功！");
         System.out.println("访问地址: http://localhost:8081");
         System.out.println("========================================");
+    }
+
+
+
+    public class GenerateBCryptPwd {
+        public  void main(String[] args) {
+
+        }
     }
 }

@@ -1,28 +1,16 @@
-server:
-  port: 8081
-
+# 生产环境专属配置（备用）
 spring:
+  # MySQL 连接URL（补上公钥允许参数，避免报错）
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hr_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
-    druid:
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
-      max-wait: 60000
-      validation-query: SELECT 1
-      test-while-idle: true
-
+    url: jdbc:mysql://localhost:3306/hr_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+  # Hive 连接配置（生产环境，根据实际IP调整）
   hive:
     url: jdbc:hive2://localhost:10000/default
     username: hadoop
     password: ""
     driver-class-name: org.apache.hive.jdbc.HiveDriver
 
+# 生产环境日志级别（INFO，减少日志量）
 logging:
   level:
-    root: INFO
     com.hr.backend: INFO

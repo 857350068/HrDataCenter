@@ -42,8 +42,6 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import request from '@/api/request'
 
-// 注册时部门列表使用静态数据（注册接口无需登录）
-
 const formRef = ref(null)
 const loading = ref(false)
 const departments = ref([])
@@ -58,18 +56,31 @@ const rules = {
   username: [{ required: true, message: '请输入工号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  role: [{ required: true, message: '请选择角色', trigger: 'change' }]
+  role: [{ required: true, message: '请选择角色', trigger: 'change' }],
+  deptId: [{ required: true, message: '请选择部门', trigger: 'change' }]
+}
+
+// 从后端获取部门列表
+const loadDepartments = async () => {
+  try {
+    const res = await request({ url: '/department/list', method: 'get' })
+    departments.value = res.data || []
+  } catch (e) {
+    ElMessage.error('加载部门列表失败')
+    // 如果获取失败，使用默认数据
+    departments.value = [
+      { id: 1, name: '销售部' },
+      { id: 2, name: '研发部' },
+      { id: 3, name: '人事部' },
+      { id: 4, name: '财务部' },
+      { id: 5, name: '市场部' },
+      { id: 6, name: '运营部' }
+    ]
+  }
 }
 
 onMounted(() => {
-  departments.value = [
-    { id: 1, name: '销售部' },
-    { id: 2, name: '研发部' },
-    { id: 3, name: '人事部' },
-    { id: 4, name: '财务部' },
-    { id: 5, name: '市场部' },
-    { id: 6, name: '运营部' }
-  ]
+  loadDepartments()
 })
 
 const onSubmit = async () => {

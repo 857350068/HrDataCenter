@@ -10,7 +10,14 @@
           <el-input v-model="query.employeeNo" placeholder="员工编号" clearable style="width: 120px" />
         </el-form-item>
         <el-form-item label="部门">
-          <el-input v-model="query.deptName" placeholder="部门" clearable style="width: 120px" />
+          <el-select v-model="query.deptName" placeholder="请选择部门" clearable style="width: 150px">
+            <el-option v-for="dept in departmentList" :key="dept.name" :label="dept.name" :value="dept.name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="数据分类">
+          <el-select v-model="query.categoryId" placeholder="请选择分类" clearable style="width: 150px">
+            <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="周期">
           <el-input v-model="query.period" placeholder="如202601" clearable style="width: 100px" />
@@ -61,8 +68,10 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名" />
         </el-form-item>
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+        <el-form-item label="部门" prop="deptName">
+          <el-select v-model="form.deptName" placeholder="请选择部门" clearable style="width: 100%">
+            <el-option v-for="dept in departmentList" :key="dept.name" :label="dept.name" :value="dept.name" />
+          </el-select>
         </el-form-item>
         <el-form-item label="岗位" prop="job">
           <el-input v-model="form.job" placeholder="请输入岗位" />
@@ -96,9 +105,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getEmployeePage, addEmployee, updateEmployee, deleteEmployee } from '@/api/data'
 import { getCategoryList } from '@/api/category'
+import { getDepartmentList } from '@/api/department'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-const query = reactive({ employeeNo: '', deptName: '', period: '' })
+const query = reactive({ employeeNo: '', deptName: '', categoryId: null, period: '' })
 const page = reactive({ current: 1, size: 10, total: 0 })
 const tableData = ref([])
 const loading = ref(false)
@@ -107,6 +117,7 @@ const submitting = ref(false)
 const dialogTitle = ref('')
 const formRef = ref(null)
 const categoryList = ref([])
+const departmentList = ref([])
 
 const form = reactive({
   id: null,
@@ -122,7 +133,7 @@ const form = reactive({
 const rules = {
   employeeNo: [{ required: true, message: '请输入员工编号', trigger: 'blur' }],
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }],
+  deptName: [{ required: true, message: '请选择部门', trigger: 'change' }],
   job: [{ required: true, message: '请输入岗位', trigger: 'blur' }],
   categoryId: [{ required: true, message: '请选择数据分类', trigger: 'change' }],
   value: [{ required: true, message: '请输入指标值', trigger: 'blur' }],
@@ -135,6 +146,15 @@ const loadCategoryList = async () => {
     categoryList.value = res.data || []
   } catch (e) {
     ElMessage.error('加载分类列表失败')
+  }
+}
+
+const loadDepartmentList = async () => {
+  try {
+    const res = await getDepartmentList()
+    departmentList.value = res.data || []
+  } catch (e) {
+    ElMessage.error('加载部门列表失败')
   }
 }
 
@@ -151,6 +171,7 @@ const load = async () => {
       size: page.size,
       employeeNo: query.employeeNo,
       deptName: query.deptName,
+      categoryId: query.categoryId,
       period: query.period
     })
     tableData.value = res.data.records || []
@@ -165,6 +186,7 @@ const load = async () => {
 const resetQuery = () => {
   query.employeeNo = ''
   query.deptName = ''
+  query.categoryId = null
   query.period = ''
   page.current = 1
   load()
@@ -236,6 +258,7 @@ const handleDelete = async (id) => {
 
 onMounted(() => {
   loadCategoryList()
+  loadDepartmentList()
   load()
 })
 </script>

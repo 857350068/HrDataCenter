@@ -1,13 +1,31 @@
+# 核心公共配置（所有环境共享）
 spring:
+  # 激活 dev 环境（开发环境）
   profiles:
     active: dev
+  # 应用名称
   application:
     name: hr-datacenter
+  # 时间格式配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
     default-property-inclusion: non_null
+  # 数据库连接池公共配置（Druid）
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456  # 替换为你的MySQL实际密码（如果不是123456）
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      validation-query: SELECT 1
+      test-while-idle: true
 
+# MyBatis-Plus 全局配置
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.hr.backend.model.entity
@@ -22,10 +40,18 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
+# JWT 配置（2小时过期）
 jwt:
   secret: hr-datacenter-secret-key-2024-hr-management-system-secure-jwt-token-generation-key-512bits-please-use-this-long-key-for-security-purposes-only-do-not-share-with-anyone
   expiration: 7200000
 
+# 服务器配置
+server:
+  port: 8081  # 后端端口（统一在这里配置，避免重复）
+
+# 日志公共配置
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  level:
+    root: INFO  # 全局日志级别

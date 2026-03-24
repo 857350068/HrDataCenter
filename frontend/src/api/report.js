@@ -19,3 +19,7 @@ export function updateReport(id, data) {
 export function deleteReport(id) {
   return request({ url: `/report/${id}`, method: 'delete' })
 }
+
+export function previewReportData(sql) {
+  return request({ url: '/report/preview', method: 'post', data: { sql } })
+}

@@ -83,7 +83,9 @@
           </el-select>
         </el-form-item>
         <el-form-item label="部门" prop="deptName">
-          <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+          <el-select v-model="form.deptName" placeholder="请选择部门" clearable style="width: 100%">
+            <el-option v-for="dept in departmentList" :key="dept.name" :label="dept.name" :value="dept.name" />
+          </el-select>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入手机号" />
@@ -106,6 +108,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getUserPage, addUser, updateUser, deleteUser } from '@/api/admin'
+import { getDepartmentList } from '@/api/department'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const query = reactive({ username: '', role: '' })
@@ -116,6 +119,7 @@ const dialogVisible = ref(false)
 const submitting = ref(false)
 const dialogTitle = ref('')
 const formRef = ref(null)
+const departmentList = ref([])
 
 const form = reactive({
   id: null,
@@ -140,13 +144,22 @@ const rules = {
     { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
   ],
   role: [{ required: true, message: '请选择角色', trigger: 'change' }],
-  deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }],
+  deptName: [{ required: true, message: '请选择部门', trigger: 'change' }],
   phone: [
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
   ],
   email: [
     { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ]
+}
+
+const loadDepartmentList = async () => {
+  try {
+    const res = await getDepartmentList()
+    departmentList.value = res.data || []
+  } catch (e) {
+    ElMessage.error('加载部门列表失败')
+  }
 }
 
 const getRoleName = (role) => {
@@ -250,7 +263,10 @@ const handleDelete = async (id) => {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  loadDepartmentList()
+  load()
+})
 </script>
 
 <style scoped>
